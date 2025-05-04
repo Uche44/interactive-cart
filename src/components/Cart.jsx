@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const Cart = ({ cartItems, setCartItems, quantity }) => {
+const Cart = ({ cartItems, setCartItems }) => {
   const fetchCartItems = () => {
     const fetchedItems = localStorage.getItem("cartItems");
     const parsedItems = fetchedItems ? JSON.parse(fetchedItems) : [];
@@ -36,11 +36,11 @@ const Cart = ({ cartItems, setCartItems, quantity }) => {
               </h2>
               <div className="h-fit w-[12rem] border-2 flex justify-between">
                 <p className="text-amber-700 font-medium text-[1.2rem]">
-                  {quantity}x
+                  {item.quantity}x
                 </p>
                 <p className="text-gray-400 text-[1.2rem]">@${item.price}</p>
                 <p className="text-gray-500  font-semibold text-[1.2rem]">
-                  ${(item.price * quantity).toFixed(2)}
+                  ${(item.price * item.quantity).toFixed(2)}
                 </p>
               </div>
               <button className="absolute right-[1rem] top-[2.1rem]">

@@ -6,6 +6,7 @@ const FoodItem = ({ quantity, setQuantity, cartItems, setCartItems }) => {
     dessertList.map((dessert) => ({
       ...dessert,
       onCartAdded: false,
+      quantity: 1,
     }))
   );
 
@@ -22,7 +23,7 @@ const FoodItem = ({ quantity, setQuantity, cartItems, setCartItems }) => {
         return prevCartItems;
       }
 
-      const updatedCart = [...prevCartItems, { ...dessertToAdd }];
+      const updatedCart = [...prevCartItems, { ...dessertToAdd, quantity: 1 }];
 
       localStorage.setItem("cartItems", JSON.stringify(updatedCart));
       console.log("Item added to cart", updatedCart);
@@ -36,16 +37,13 @@ const FoodItem = ({ quantity, setQuantity, cartItems, setCartItems }) => {
     );
   };
 
-  // const incrementQuantity = (index) => {
-  //   const updatedDesserts = desserts.map((dessert, i) =>
-  //     i === index ? { ...dessert, quantity: dessert.quantity + 1 } : dessert
-  //   );
-  //   setDesserts(updatedDesserts);
-  //   // const updatedCart = cartItems.map((item, i) =>
-  //   //   i === index ? { ...item, quantity: item.quantity + 1 } : item
-  //   // );
-  //   // setCartItems(updatedCart);
-  // };
+  const incrementQuantity = (index) => {
+    const updatedDesserts = desserts.map((dessert, i) =>
+      i === index ? { ...dessert, quantity: dessert.quantity + 1 } : dessert
+    );
+    setDesserts(updatedDesserts);
+  };
+  
   const decrementQuantity = (index) => {
     const updatedDesserts = desserts.map((dessert, i) =>
       i === index && dessert.quantity > 0
@@ -53,6 +51,20 @@ const FoodItem = ({ quantity, setQuantity, cartItems, setCartItems }) => {
         : dessert
     );
     setDesserts(updatedDesserts);
+  };
+
+  const updateCartQuantity = (index) => {
+    const dessertToUpdate = desserts[index];
+
+    setCartItems((prevCartItems) => {
+      const updatedCart = prevCartItems.map((item) =>
+        item.name === dessertToUpdate.name
+          ? { ...item, quantity: dessertToUpdate.quantity }
+          : item
+      );
+      localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+      return updatedCart;
+    });
   };
 
   return (
@@ -103,9 +115,12 @@ const FoodItem = ({ quantity, setQuantity, cartItems, setCartItems }) => {
                     alt=""
                     className="w-7 h-7 rounded-full border-white p-1 border-2"
                   />
-                  <p className="text-white text-[1.5rem]">{quantity}</p>
+                  <p className="text-white text-[1.5rem]">{dessert.quantity}</p>
                   <img
-                    onClick={() => setQuantity(quantity + 1)}
+                    onClick={() => {
+                      incrementQuantity(index);
+                      updateCartQuantity(index);
+                    }}
                     src="/assets/images/icon-increment-quantity.svg"
                     alt=""
                     className="w-7 h-7 rounded-full border-white p-1 border-2"
