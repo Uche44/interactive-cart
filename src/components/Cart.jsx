@@ -14,14 +14,28 @@ const Cart = ({ cartItems, setCartItems }) => {
     fetchCartItems();
   }, [cartItems]);
 
+  // Calculate total number of items (sum of all quantities)
+  const getTotalItems = () => {
+    return cartItems.reduce((total, item) => total + item.quantity, 0);
+  };
+
+  // Calculate total order price
+  const getOrderTotal = () => {
+    return cartItems
+      .reduce((total, item) => total + item.price * item.quantity, 0)
+      .toFixed(2);
+  };
+
   return (
     <section
       id="cart"
-      className="w-full h-fit flex flex-col items-start mt-10"
+      className="w-full h-fit flex flex-col items-start mt-10 md:mt-0 md:fixed md:right-0 md:top-0 md:w-[30%] md:h-screen bg-black px-8 py-10 overflow-y-auto"
     >
+      {/* Updated to show total items (not just array length) */}
       <h1 className="text-amber-700 font-bold text-[2rem]">
-        Your Cart ({cartItems.length})
+        Your Cart ({getTotalItems()})
       </h1>
+
       <div className="w-full h-fit">
         {cartItems.length === 0 ? (
           <p className="text-white">Your cart is empty.</p>
@@ -39,7 +53,7 @@ const Cart = ({ cartItems, setCartItems }) => {
                   {item.quantity}x
                 </p>
                 <p className="text-gray-400 text-[1.2rem]">@${item.price}</p>
-                <p className="text-gray-500  font-semibold text-[1.2rem]">
+                <p className="text-gray-500 font-semibold text-[1.2rem]">
                   ${(item.price * item.quantity).toFixed(2)}
                 </p>
               </div>
@@ -52,7 +66,9 @@ const Cart = ({ cartItems, setCartItems }) => {
 
         <div className="w-full h-fit flex justify-between items-center mt-6 px-4">
           <p className="text-gray-400 text-[1.2rem]">Order Total</p>
-          <h2 className="font-bold text-white text-[1.3rem]">$total</h2>
+          <h2 className="font-bold text-white text-[1.3rem]">
+            ${getOrderTotal()}
+          </h2>
         </div>
       </div>
 

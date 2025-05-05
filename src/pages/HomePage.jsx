@@ -5,12 +5,15 @@ const HomePage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [quantity, setQuantity] = useState(1);
   return (
-    <section className="w-full min-h-screen bg-black flex flex-col items-center py-10 px-8">
-      <a href="#cart">
+    <section className="w-full min-h-screen bg-black flex flex-col items-center py-10 md:grid md:grid-cols-[2fr_1fr]  px-8">
+      <a
+        href="#cart"
+        className="fixed top-[1rem] right-[2rem] w-[2rem] h-[2rem] mt-4 ml-4"
+      >
         <img
           src="/assets/images/icon-add-to-cart.svg"
           alt=""
-          className="fixed top-[1rem] right-[2rem] w-[2rem] h-[2rem] mt-4 ml-4"
+          className=""
         />
       </a>
       <FoodItem

@@ -1,14 +1,28 @@
 import { dessertList } from "../lib/constants";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-const FoodItem = ({ quantity, setQuantity, cartItems, setCartItems }) => {
+const FoodItem = ({ cartItems, setCartItems }) => {
   const [desserts, setDesserts] = useState(
-    dessertList.map((dessert) => ({
-      ...dessert,
-      onCartAdded: false,
-      quantity: 1,
-    }))
+    dessertList.map((dessert) => {
+      const cartItem = cartItems.find((item) => item.name === dessert.name);
+      return {
+        ...dessert,
+        onCartAdded: !!cartItem,
+        quantity: cartItem ? cartItem.quantity : 1,
+      };
+    })
   );
+
+  useEffect(() => {
+    setDesserts((prevDesserts) =>
+      prevDesserts.map((dessert) => {
+        const cartItem = cartItems.find((item) => item.name === dessert.name);
+        return cartItem
+          ? { ...dessert, quantity: cartItem.quantity, onCartAdded: true }
+          : dessert;
+      })
+    );
+  }, [cartItems]);
 
   const addToCart = (index) => {
     const dessertToAdd = desserts[index];
@@ -17,16 +31,16 @@ const FoodItem = ({ quantity, setQuantity, cartItems, setCartItems }) => {
       const isItemInCart = prevCartItems.some(
         (item) => item.name === dessertToAdd.name
       );
+      if (isItemInCart) return prevCartItems;
 
-      if (isItemInCart) {
-        console.log("Item already in cart");
-        return prevCartItems;
-      }
-
-      const updatedCart = [...prevCartItems, { ...dessertToAdd, quantity: 1 }];
-
+      const updatedCart = [
+        ...prevCartItems,
+        {
+          ...dessertToAdd,
+          quantity: dessertToAdd.quantity,
+        },
+      ];
       localStorage.setItem("cartItems", JSON.stringify(updatedCart));
-      console.log("Item added to cart", updatedCart);
       return updatedCart;
     });
 
@@ -37,29 +51,26 @@ const FoodItem = ({ quantity, setQuantity, cartItems, setCartItems }) => {
     );
   };
 
-  const incrementQuantity = (index) => {
-    const updatedDesserts = desserts.map((dessert, i) =>
-      i === index ? { ...dessert, quantity: dessert.quantity + 1 } : dessert
-    );
-    setDesserts(updatedDesserts);
-  };
-  
-  const decrementQuantity = (index) => {
-    const updatedDesserts = desserts.map((dessert, i) =>
-      i === index && dessert.quantity > 0
-        ? { ...dessert, quantity: dessert.quantity - 1 }
-        : dessert
-    );
-    setDesserts(updatedDesserts);
+  const adjustQuantity = (index, change) => {
+    setDesserts((prevDesserts) => {
+      const newQuantity = prevDesserts[index].quantity + change;
+      return prevDesserts.map((dessert, i) =>
+        i === index
+          ? {
+              ...dessert,
+              quantity: Math.max(1, newQuantity),
+            }
+          : dessert
+      );
+    });
   };
 
-  const updateCartQuantity = (index) => {
-    const dessertToUpdate = desserts[index];
-
+  const syncQuantityToCart = (index) => {
+    const dessert = desserts[index];
     setCartItems((prevCartItems) => {
       const updatedCart = prevCartItems.map((item) =>
-        item.name === dessertToUpdate.name
-          ? { ...item, quantity: dessertToUpdate.quantity }
+        item.name === dessert.name
+          ? { ...item, quantity: dessert.quantity }
           : item
       );
       localStorage.setItem("cartItems", JSON.stringify(updatedCart));
@@ -68,9 +79,9 @@ const FoodItem = ({ quantity, setQuantity, cartItems, setCartItems }) => {
   };
 
   return (
-    <section className="w-full h-fit flex flex-col items-start">
+    <section className="w-full h-fit flex flex-col items-start mr-4">
       <h1 className="text-white font-bold text-[2rem]">Desserts</h1>
-      <div className="w-full h-fit mt-4">
+      <div className="w-full h-fit mt-4 md:grid md:grid-cols-2 gap-4">
         {desserts.map((dessert, index) => (
           <div
             key={index}
@@ -92,39 +103,50 @@ const FoodItem = ({ quantity, setQuantity, cartItems, setCartItems }) => {
               ${dessert.price}
             </h3>
 
-            {/* add to cart div */}
             <div className="w-[60%] border-gray-500 border-1 absolute left-[20%] top-[12.5rem] h-[4rem] rounded-[3rem] overflow-hidden">
-              {!dessert.onCartAdded && (
+              {!dessert.onCartAdded ? (
                 <button
                   onClick={() => addToCart(index)}
-                  className="w-full h-full bg-black flex items-center justify-center gap-4"
+                  className="w-full h-full bg-black flex items-center cursor-pointer justify-center gap-4"
                 >
                   <img
                     src="/assets/images/icon-add-to-cart.svg"
                     alt=""
-                    className=""
                   />
                   <p className="text-white font-medium">Add to Cart</p>
                 </button>
-              )}
-              {dessert.onCartAdded && (
+              ) : (
                 <div className="w-full h-full py-4 px-5 flex justify-between items-center bg-amber-700">
-                  <img
-                    onClick={() => decrementQuantity(index)}
-                    src="/assets/images/icon-decrement-quantity.svg"
-                    alt=""
-                    className="w-7 h-7 rounded-full border-white p-1 border-2"
-                  />
-                  <p className="text-white text-[1.5rem]">{dessert.quantity}</p>
-                  <img
+                  <button
                     onClick={() => {
-                      incrementQuantity(index);
-                      updateCartQuantity(index);
+                      adjustQuantity(index, -1);
+                      syncQuantityToCart(index);
                     }}
-                    src="/assets/images/icon-increment-quantity.svg"
-                    alt=""
-                    className="w-7 h-7 rounded-full border-white p-1 border-2"
-                  />
+                    disabled={dessert.quantity <= 1}
+                  >
+                    <img
+                      src="/assets/images/icon-decrement-quantity.svg"
+                      alt="Decrease"
+                      className={`w-7 h-7 rounded-full border-white p-1 border-2 ${
+                        dessert.quantity <= 1
+                          ? "opacity-50 cursor-not-allowed"
+                          : ""
+                      }`}
+                    />
+                  </button>
+                  <p className="text-white text-[1.5rem]">{dessert.quantity}</p>
+                  <button
+                    onClick={() => {
+                      adjustQuantity(index, 1);
+                      syncQuantityToCart(index);
+                    }}
+                  >
+                    <img
+                      src="/assets/images/icon-increment-quantity.svg"
+                      alt="Increase"
+                      className="w-7 h-7 rounded-full border-white p-1 border-2"
+                    />
+                  </button>
                 </div>
               )}
             </div>
