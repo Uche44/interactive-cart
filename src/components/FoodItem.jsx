@@ -1,17 +1,16 @@
-import { dessertList } from "../lib/constants";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
-const FoodItem = ({ cartItems, setCartItems }) => {
-  const [desserts, setDesserts] = useState(
-    dessertList.map((dessert) => {
-      const cartItem = cartItems.find((item) => item.name === dessert.name);
-      return {
-        ...dessert,
-        onCartAdded: !!cartItem,
-        quantity: cartItem ? cartItem.quantity : 1,
-      };
-    })
-  );
+const FoodItem = ({ desserts, setDesserts, cartItems, setCartItems }) => {
+  // const [desserts, setDesserts] = useState(
+  //   dessertList.map((dessert) => {
+  //     const cartItem = cartItems.find((item) => item.name === dessert.name);
+  //     return {
+  //       ...dessert,
+  //       onCartAdded: !!cartItem,
+  //       quantity: cartItem ? cartItem.quantity : 1,
+  //     };
+  //   })
+  // );
 
   useEffect(() => {
     setDesserts((prevDesserts) =>
@@ -51,17 +50,47 @@ const FoodItem = ({ cartItems, setCartItems }) => {
     );
   };
 
+  // const adjustQuantity = (index, change) => {
+
+  //   setDesserts((prevDesserts) => {
+  //     const newQuantity = prevDesserts[index].quantity + change;
+  //     return prevDesserts.map((dessert, i) =>
+  //       i === index
+  //         ? {
+  //             ...dessert,
+  //             quantity: Math.max(1, newQuantity),
+  //           }
+  //         : dessert
+  //     );
+  //   });
+
+  // };
+
   const adjustQuantity = (index, change) => {
+    // Get current cart from localStorage
+    const storedCart = JSON.parse(localStorage.getItem("cartItems") || "[]");
+
     setDesserts((prevDesserts) => {
-      const newQuantity = prevDesserts[index].quantity + change;
-      return prevDesserts.map((dessert, i) =>
-        i === index
-          ? {
-              ...dessert,
-              quantity: Math.max(1, newQuantity),
-            }
-          : dessert
+      const updatedDesserts = [...prevDesserts];
+      const dessertToUpdate = updatedDesserts[index];
+      const newQuantity = Math.max(1, dessertToUpdate.quantity + change);
+
+      updatedDesserts[index] = {
+        ...dessertToUpdate,
+        quantity: newQuantity,
+      };
+
+      const updatedCart = storedCart.map((item) =>
+        item.name === dessertToUpdate.name
+          ? { ...item, quantity: newQuantity }
+          : item
       );
+
+      localStorage.setItem("cartItems", JSON.stringify(updatedCart));
+
+      setCartItems(updatedCart);
+
+      return updatedDesserts;
     });
   };
 
@@ -123,6 +152,8 @@ const FoodItem = ({ cartItems, setCartItems }) => {
                       syncQuantityToCart(index);
                     }}
                     disabled={dessert.quantity <= 1}
+                    className="cursor-pointer"
+                    title="Decrease quantity"
                   >
                     <img
                       src="/assets/images/icon-decrement-quantity.svg"
@@ -140,6 +171,7 @@ const FoodItem = ({ cartItems, setCartItems }) => {
                       adjustQuantity(index, 1);
                       syncQuantityToCart(index);
                     }}
+                    className="cursor-pointer"
                   >
                     <img
                       src="/assets/images/icon-increment-quantity.svg"

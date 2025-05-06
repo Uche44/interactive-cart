@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-const Cart = ({ cartItems, setCartItems }) => {
+const Cart = ({ setDesserts, cartItems, setCartItems }) => {
   const fetchCartItems = () => {
     const fetchedItems = localStorage.getItem("cartItems");
     const parsedItems = fetchedItems ? JSON.parse(fetchedItems) : [];
@@ -14,26 +14,40 @@ const Cart = ({ cartItems, setCartItems }) => {
     fetchCartItems();
   }, [cartItems]);
 
-  // Calculate total number of items (sum of all quantities)
-  const getTotalItems = () => {
-    return cartItems.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  // Calculate total order price
   const getOrderTotal = () => {
     return cartItems
       .reduce((total, item) => total + item.price * item.quantity, 0)
       .toFixed(2);
   };
 
+  const handleRemoveItem = (index) => {
+    const removedItem = cartItems[index];
+
+    const updatedCartItems = cartItems.filter((_, i) => i !== index);
+    setCartItems(updatedCartItems);
+    localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
+
+    setDesserts((prevDesserts) =>
+      prevDesserts.map((dessert) =>
+        dessert.name === removedItem.name
+          ? { ...dessert, onCartAdded: false, quantity: 1 }
+          : dessert
+      )
+    );
+  };
+
+  // const handleCheckOut = () => {
+  //   const purchasedItems = localStorage.getItem(cartItems);
+  //   console.log(JSON.parse(purchasedItems));
+  // };
+
   return (
     <section
       id="cart"
-      className="w-full h-fit flex flex-col items-start mt-10 md:mt-0 md:fixed md:right-0 md:top-0 md:w-[30%] md:h-screen bg-black px-8 py-10 overflow-y-auto"
+      className="w-full h-fit flex flex-col items-start mt-10 md:fixed md:right-0 md:top-5 md:w-[33%] md:h-screen bg-black px-8 py-10 overflow-y-auto"
     >
-      {/* Updated to show total items (not just array length) */}
       <h1 className="text-amber-700 font-bold text-[2rem]">
-        Your Cart ({getTotalItems()})
+        Your Cart ({cartItems.length})
       </h1>
 
       <div className="w-full h-fit">
@@ -57,8 +71,11 @@ const Cart = ({ cartItems, setCartItems }) => {
                   ${(item.price * item.quantity).toFixed(2)}
                 </p>
               </div>
-              <button className="absolute right-[1rem] top-[2.1rem]">
-                &#10006;
+              <button
+                onClick={() => handleRemoveItem(index)}
+                className="absolute right-[1rem] top-[2.1rem] text-gray-400 cursor-pointer brightness-125"
+              >
+                {/* &#10006; */}x
               </button>
             </div>
           ))
@@ -82,7 +99,10 @@ const Cart = ({ cartItems, setCartItems }) => {
           This is a <b>carbon-neutral delivery</b>
         </p>
       </div>
-      <button className="w-full h-[3rem] bg-amber-700 rounded-[3rem] mb-4 mt-7 font-medium">
+      <button
+        // onClick={handleCheckOut}
+        className="w-full h-[3rem] bg-amber-700 rounded-[3rem] mb-4 mt-7 font-medium md:h-[4rem] cursor-pointer"
+      >
         Confirm Order
       </button>
     </section>
