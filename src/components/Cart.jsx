@@ -1,6 +1,16 @@
 import { useEffect } from "react";
+import { useDessertContext } from "../context/DessertContext";
 
-const Cart = ({ setDesserts, cartItems, setCartItems }) => {
+const Cart = () => {
+  const {
+    cartItems,
+    setCartItems,
+    setDesserts,
+    onCheckOut,
+    setOnCheckOut,
+    getOrderTotal,
+  } = useDessertContext();
+
   const fetchCartItems = () => {
     const fetchedItems = localStorage.getItem("cartItems");
     const parsedItems = fetchedItems ? JSON.parse(fetchedItems) : [];
@@ -13,12 +23,6 @@ const Cart = ({ setDesserts, cartItems, setCartItems }) => {
   useEffect(() => {
     fetchCartItems();
   }, [cartItems]);
-
-  const getOrderTotal = () => {
-    return cartItems
-      .reduce((total, item) => total + item.price * item.quantity, 0)
-      .toFixed(2);
-  };
 
   const handleRemoveItem = (index) => {
     const removedItem = cartItems[index];
@@ -36,15 +40,10 @@ const Cart = ({ setDesserts, cartItems, setCartItems }) => {
     );
   };
 
-  // const handleCheckOut = () => {
-  //   const purchasedItems = localStorage.getItem(cartItems);
-  //   console.log(JSON.parse(purchasedItems));
-  // };
-
   return (
     <section
       id="cart"
-      className="w-full h-fit flex flex-col items-start mt-10 md:fixed md:right-0 md:top-5 md:w-[33%] md:h-screen bg-black px-8 py-10 overflow-y-auto"
+      className="w-full h-[calc(100vh-5rem)] flex flex-col items-start mt-10 md:fixed md:right-0 md:top-5 md:w-[33%] md:min-h-[calc(100vh-2.5rem)] bg-black px-8 py-10 overflow-y-auto"
     >
       <h1 className="text-amber-700 font-bold text-[2rem]">
         Your Cart ({cartItems.length})
@@ -75,7 +74,7 @@ const Cart = ({ setDesserts, cartItems, setCartItems }) => {
                 onClick={() => handleRemoveItem(index)}
                 className="absolute right-[1rem] top-[2.1rem] text-gray-400 cursor-pointer brightness-125"
               >
-                {/* &#10006; */}x
+                x
               </button>
             </div>
           ))
@@ -100,8 +99,13 @@ const Cart = ({ setDesserts, cartItems, setCartItems }) => {
         </p>
       </div>
       <button
-        // onClick={handleCheckOut}
-        className="w-full h-[3rem] bg-amber-700 rounded-[3rem] mb-4 mt-7 font-medium md:h-[4rem] cursor-pointer"
+        onClick={() => setOnCheckOut(!onCheckOut)}
+        className={`w-full h-[3rem] bg-amber-700 rounded-[3rem] mb-4 mt-7 font-medium md:h-[4rem] cursor-pointer ${
+          cartItems.length === 0
+            ? "bg-gray-500 cursor-not-allowed"
+            : "hover:bg-amber-600 transition-colors"
+        }`}
+        disabled={cartItems.length === 0}
       >
         Confirm Order
       </button>

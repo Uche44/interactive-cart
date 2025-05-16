@@ -1,9 +1,12 @@
 import React from "react";
 import HomePage from "./pages/HomePage";
+import { DessertProvider } from "./context/DessertContext";
 const App = () => {
   return (
     <div>
-      <HomePage />
+      <DessertProvider>
+        <HomePage />
+      </DessertProvider>
     </div>
   );
 };

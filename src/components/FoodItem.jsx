@@ -1,6 +1,7 @@
 import { useEffect } from "react";
+import { useDessertContext } from "../context/DessertContext";
 
-const FoodItem = ({ desserts, setDesserts, cartItems, setCartItems }) => {
+const FoodItem = () => {
   // const [desserts, setDesserts] = useState(
   //   dessertList.map((dessert) => {
   //     const cartItem = cartItems.find((item) => item.name === dessert.name);
@@ -11,6 +12,15 @@ const FoodItem = ({ desserts, setDesserts, cartItems, setCartItems }) => {
   //     };
   //   })
   // );
+
+  const {
+    cartItems,
+    setCartItems,
+    desserts,
+    setDesserts,
+    // quantity,
+    // setQuantity,
+  } = useDessertContext();
 
   useEffect(() => {
     setDesserts((prevDesserts) =>
