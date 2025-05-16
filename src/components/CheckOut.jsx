@@ -18,7 +18,7 @@ const CheckOut = () => {
 
   return (
     <div className="fixed top-0 left-0 w-full h-screen bg-black/50 z-10 backdrop-blur-sm overflow-y-auto pointer-events-auto">
-      <div className="max-h-[85vh] w-[38%] bg-black border border-gray-700 mx-auto my-10 p-8 rounded-[1.5rem] shadow-[0_0_30px_10px_rgba(255,255,255,0.3)] ">
+      <div className="h-[80vh] fixed bottom-0 md:max-h-[85vh] md:w-[38%] bg-black border border-gray-700 md:mx-auto md:my-10 p-8 rounded-[1.5rem] md:shadow-[0_0_30px_10px_rgba(255,255,255,0.3)] ">
         <div className="sticky top-0 bg-black pt-2 pb-4 z-20">
           <img
             src="/assets/images/confirmed.svg"
@@ -71,7 +71,7 @@ const CheckOut = () => {
           </div>
           <button
             onClick={resetCart}
-            className="bg-amber-600 hover:bg-amber-700 transition-colors w-full h-12 rounded-full text-black font-bold cursor-pointer"
+            className="bg-amber-600 hover:bg-amber-700 transition-colors w-full h-12 rounded-full text-black font-bold cursor-pointer mb-4"
           >
             Start New Order
           </button>

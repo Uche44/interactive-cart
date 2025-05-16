@@ -2,25 +2,8 @@ import { useEffect } from "react";
 import { useDessertContext } from "../context/DessertContext";
 
 const FoodItem = () => {
-  // const [desserts, setDesserts] = useState(
-  //   dessertList.map((dessert) => {
-  //     const cartItem = cartItems.find((item) => item.name === dessert.name);
-  //     return {
-  //       ...dessert,
-  //       onCartAdded: !!cartItem,
-  //       quantity: cartItem ? cartItem.quantity : 1,
-  //     };
-  //   })
-  // );
-
-  const {
-    cartItems,
-    setCartItems,
-    desserts,
-    setDesserts,
-    // quantity,
-    // setQuantity,
-  } = useDessertContext();
+  const { cartItems, setCartItems, desserts, setDesserts } =
+    useDessertContext();
 
   useEffect(() => {
     setDesserts((prevDesserts) =>
@@ -59,22 +42,6 @@ const FoodItem = () => {
       )
     );
   };
-
-  // const adjustQuantity = (index, change) => {
-
-  //   setDesserts((prevDesserts) => {
-  //     const newQuantity = prevDesserts[index].quantity + change;
-  //     return prevDesserts.map((dessert, i) =>
-  //       i === index
-  //         ? {
-  //             ...dessert,
-  //             quantity: Math.max(1, newQuantity),
-  //           }
-  //         : dessert
-  //     );
-  //   });
-
-  // };
 
   const adjustQuantity = (index, change) => {
     // Get current cart from localStorage
@@ -119,8 +86,10 @@ const FoodItem = () => {
 
   return (
     <section className="w-full h-fit flex flex-col items-start mr-4">
-      <h1 className="text-white font-bold text-[2rem]">Desserts</h1>
-      <div className="w-full h-fit mt-4 md:grid md:grid-cols-2 gap-4">
+      <div className="w-full h-fit fixed top-0 z-5 bg-black/70 py-4">
+        <h1 className="text-white font-bold text-[2rem]">Desserts</h1>
+      </div>
+      <div className="w-full h-fit mt-12 md:grid md:grid-cols-2 gap-4">
         {desserts.map((dessert, index) => (
           <div
             key={index}

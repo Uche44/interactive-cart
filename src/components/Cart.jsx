@@ -100,7 +100,7 @@ const Cart = () => {
       </div>
       <button
         onClick={() => setOnCheckOut(!onCheckOut)}
-        className={`w-full h-[3rem] bg-amber-700 rounded-[3rem] mb-4 mt-7 font-medium md:h-[4rem] cursor-pointer ${
+        className={`w-full h-[3rem] bg-amber-700 rounded-[3rem] mb-4 mt-7 font-medium md:h-[3.5rem] cursor-pointer ${
           cartItems.length === 0
             ? "bg-gray-500 cursor-not-allowed"
             : "hover:bg-amber-600 transition-colors"

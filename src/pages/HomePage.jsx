@@ -7,7 +7,7 @@ const HomePage = () => {
 
   return (
     <section className="w-full min-h-screen bg-black flex flex-col items-center py-10 md:grid md:grid-cols-[2fr_1fr]  px-8">
-      <a
+      {/* <a
         href="#cart"
         className="fixed top-[1rem] right-[2rem] w-[2rem] h-[2rem] mt-4 ml-4"
       >
@@ -16,7 +16,7 @@ const HomePage = () => {
           alt=""
           className=""
         />
-      </a>
+      </a> */}
       <FoodItem />
       <Cart />
       {onCheckOut && <CheckOut />}
